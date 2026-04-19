@@ -1,19 +1,65 @@
-# 🎈 Blank app template
+# Distance Runner Training Log (Terminal + SQLite)
 
-A simple Streamlit app template for you to modify!
+A simple Python CLI for logging running workouts and monitoring training load.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
+## Features
 
-### How to run it on your own machine
+- Log workouts with:
+  - date
+  - type (`easy`, `tempo`, `interval`, `long`, `race`)
+  - distance (miles)
+  - duration (minutes)
+  - RPE (1-10)
+- Automatic weekly mileage aggregation
+- ACWR monitoring using a monotonic load model
+  - Load per session = `duration_minutes * RPE`
+  - Acute load = 7-day cumulative load
+  - Chronic reference = 28-day average weekly load (`28-day total / 4`)
+  - `ACWR = acute_7_day / chronic_weekly_average`
+- Injury-risk flag when ACWR > 1.5
+- Weekly summary:
+  - total miles
+  - average RPE
+  - load trend vs previous week
+- Local persistence with SQLite
 
-1. Install the requirements
+## Quick start
 
-   ```
-   $ pip install -r requirements.txt
-   ```
+```bash
+python runner_log.py --help
+```
 
-2. Run the app
+### Add a workout
 
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+```bash
+python runner_log.py add --date 2026-04-18 --type tempo --distance 6.2 --duration 48 --rpe 7
+```
+
+### List recent workouts
+
+```bash
+python runner_log.py list --limit 20
+```
+
+### Weekly mileage table
+
+```bash
+python runner_log.py weekly-mileage
+```
+
+### Weekly summary
+
+```bash
+python runner_log.py summary --date 2026-04-19
+```
+
+## Database
+
+By default, the tool stores data in `training_log.db` in the current working directory.
+You can set a custom DB path with `--db` on any command.
+
+Example:
+
+```bash
+python runner_log.py --db ./data/runs.db list
+```

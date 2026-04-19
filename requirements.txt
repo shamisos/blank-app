@@ -1,1 +1,1 @@
-streamlit
+# No third-party dependencies required.
